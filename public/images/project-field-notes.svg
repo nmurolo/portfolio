@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1200" role="img" aria-labelledby="title">
+  <title id="title">Field Notes editorial placeholder</title>
+  <rect width="1600" height="1200" fill="#e9b89c"/>
+  <g transform="rotate(-4 800 600)">
+    <rect x="260" y="120" width="1080" height="960" rx="12" fill="#f7f0e4"/>
+    <text x="360" y="275" fill="#1b1a18" font-family="Georgia,serif" font-size="116">Field Notes</text>
+    <line x1="360" y1="325" x2="1240" y2="325" stroke="#1b1a18" stroke-width="3"/>
+    <rect x="360" y="390" width="530" height="490" fill="#354438"/>
+    <circle cx="625" cy="615" r="155" fill="#ec794c"/>
+    <text x="950" y="430" fill="#1b1a18" font-family="Arial,sans-serif" font-size="25" letter-spacing="5">ISSUE NO. 04</text>
+    <text x="950" y="515" fill="#1b1a18" font-family="Georgia,serif" font-size="54">Making a place</text>
+    <text x="950" y="575" fill="#1b1a18" font-family="Georgia,serif" font-size="54">for attention.</text>
+    <g fill="#9b8e7b"><rect x="950" y="660" width="250" height="12"/><rect x="950" y="695" width="210" height="12"/><rect x="950" y="730" width="265" height="12"/></g>
+    <text x="360" y="985" fill="#1b1a18" font-family="Arial,sans-serif" font-size="25" letter-spacing="4">PEOPLE · PLACE · PRACTICE</text>
+  </g>
+</svg>

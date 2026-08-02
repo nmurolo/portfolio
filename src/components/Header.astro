@@ -1,0 +1,156 @@
+---
+import { site } from '../data/site';
+import ThemeToggle from './ThemeToggle.astro';
+---
+
+<header class="site-header">
+	<div class="header-inner container">
+		<a class="brand" href="/" aria-label={`${site.name}, home`}>
+			<span aria-hidden="true">{site.shortName}</span>
+			<span class="brand-name">{site.name}</span>
+		</a>
+
+		<nav class="desktop-nav" aria-label="Primary navigation">
+			{site.navigation.map((item) => <a href={item.href}>{item.label}</a>)}
+		</nav>
+
+		<div class="actions">
+			<ThemeToggle />
+			<details class="mobile-menu">
+				<summary aria-label="Open navigation"><span></span><span></span></summary>
+				<nav aria-label="Mobile navigation">
+					{site.navigation.map((item) => <a href={item.href}>{item.label}</a>)}
+				</nav>
+			</details>
+		</div>
+	</div>
+</header>
+
+<style>
+	.site-header {
+		position: sticky;
+		top: 0;
+		z-index: 50;
+		border-bottom: 1px solid transparent;
+		background: color-mix(in srgb, var(--page) 86%, transparent);
+		backdrop-filter: blur(1rem);
+	}
+
+	.header-inner {
+		display: flex;
+		min-height: 5rem;
+		align-items: center;
+		justify-content: space-between;
+	}
+
+	.brand {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.8rem;
+		font-size: 0.9rem;
+		font-weight: 750;
+		letter-spacing: -0.02em;
+		text-decoration: none;
+	}
+
+	.brand > span:first-child {
+		display: grid;
+		width: 2.25rem;
+		height: 2.25rem;
+		place-items: center;
+		border-radius: 50%;
+		background: var(--text);
+		color: var(--page);
+		font-size: 0.72rem;
+		letter-spacing: 0;
+	}
+
+	.desktop-nav {
+		display: flex;
+		align-items: center;
+		gap: clamp(1.5rem, 3vw, 2.75rem);
+	}
+
+	.desktop-nav a {
+		color: var(--text-muted);
+		font-size: 0.84rem;
+		font-weight: 650;
+		text-decoration: none;
+		transition: color 180ms ease;
+	}
+
+	.desktop-nav a:hover {
+		color: var(--text);
+	}
+
+	.actions {
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+	}
+
+	.mobile-menu {
+		display: none;
+	}
+
+	@media (max-width: 42rem) {
+		.brand-name,
+		.desktop-nav {
+			display: none;
+		}
+
+		.mobile-menu {
+			display: block;
+		}
+
+		summary {
+			display: grid;
+			width: 2.5rem;
+			height: 2.5rem;
+			padding: 0;
+			place-content: center;
+			gap: 0.3rem;
+			border: 1px solid var(--line);
+			border-radius: 50%;
+			cursor: pointer;
+			list-style: none;
+		}
+
+		summary::-webkit-details-marker {
+			display: none;
+		}
+
+		summary span {
+			width: 1rem;
+			height: 1px;
+			background: var(--text);
+			transition: transform 200ms ease;
+		}
+
+		details[open] summary span:first-child {
+			transform: translateY(0.2rem) rotate(45deg);
+		}
+
+		details[open] summary span:last-child {
+			transform: translateY(-0.2rem) rotate(-45deg);
+		}
+
+		.mobile-menu nav {
+			position: fixed;
+			inset: 5rem 0 auto;
+			display: grid;
+			padding: 1rem var(--gutter) 2rem;
+			border-bottom: 1px solid var(--line);
+			background: var(--page);
+			box-shadow: var(--shadow);
+		}
+
+		.mobile-menu nav a {
+			padding: 1rem 0;
+			border-bottom: 1px solid var(--line);
+			font-family: var(--font-display);
+			font-size: 2rem;
+			text-decoration: none;
+		}
+	}
+</style>

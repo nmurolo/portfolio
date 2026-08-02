@@ -1,11 +1,266 @@
 ---
-import Welcome from '../components/Welcome.astro';
+import { getCollection } from 'astro:content';
+import ContactCta from '../components/ContactCta.astro';
+import ProjectGrid from '../components/ProjectGrid.astro';
+import SectionHeading from '../components/SectionHeading.astro';
+import { site } from '../data/site';
 import Layout from '../layouts/Layout.astro';
 
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+const projects = (await getCollection('projects', ({ data }) => data.featured))
+	.sort((a, b) => a.data.order - b.data.order);
 ---
 
 <Layout>
-	<Welcome />
+	<section class="hero container">
+		<div class="hero-copy">
+			<p class="eyebrow">{site.profile.eyebrow}</p>
+			<h1 class="display">{site.profile.headline}</h1>
+		</div>
+		<div class="hero-bottom">
+			<p class="lede">{site.profile.intro}</p>
+			<a class="button button--secondary" href="#work">Explore selected work <span aria-hidden="true">↓</span></a>
+		</div>
+		<div class="orb orb-one" aria-hidden="true"></div>
+		<div class="orb orb-two" aria-hidden="true"></div>
+	</section>
+
+	<section class="section container" id="work">
+		<SectionHeading
+			eyebrow="Selected work"
+			title="Projects built with purpose."
+			copy="A selection of product, identity, and interactive work. Each case study is driven by a Markdown file, so adding the next one is simple."
+		/>
+		<ProjectGrid projects={projects} />
+	</section>
+
+	<section class="section approach">
+		<div class="container">
+			<SectionHeading
+				eyebrow="Approach"
+				title="Strategy and craft, in equal measure."
+				copy="I move between the big picture and the smallest interaction, building systems that are expressive, practical, and made to last."
+			/>
+			<div class="principles">
+				<article data-reveal>
+					<span>01</span>
+					<h3>Find the signal</h3>
+					<p>Clarify the problem, the audience, and what success should actually feel like.</p>
+				</article>
+				<article data-reveal>
+					<span>02</span>
+					<h3>Shape the system</h3>
+					<p>Turn insight into a flexible visual and interaction language with room to grow.</p>
+				</article>
+				<article data-reveal>
+					<span>03</span>
+					<h3>Refine the details</h3>
+					<p>Prototype, test, and polish until every element earns its place.</p>
+				</article>
+			</div>
+		</div>
+	</section>
+
+	<section class="section container profile">
+		<div class="profile-visual" data-reveal>
+			<img src="/images/profile-placeholder.svg" alt="Abstract portrait placeholder" loading="lazy" />
+			<p>Replace with a portrait, studio photograph, reel, or behind-the-scenes video.</p>
+		</div>
+		<div class="profile-copy" data-reveal>
+			<p class="eyebrow">A little about me</p>
+			<h2>Curious by nature.<br />Precise by practice.</h2>
+			<p>{site.profile.bio}</p>
+			<ul>
+				{site.profile.services.map((service) => <li>{service}</li>)}
+			</ul>
+			<a class="button button--secondary" href="/about/">More about my practice <span aria-hidden="true">↗</span></a>
+		</div>
+	</section>
+
+	<div class="section container">
+		<ContactCta />
+	</div>
 </Layout>
+
+<style>
+	.hero {
+		position: relative;
+		display: flex;
+		min-height: min(52rem, calc(100svh - 5rem));
+		flex-direction: column;
+		justify-content: space-between;
+		overflow: hidden;
+		padding-block: clamp(4rem, 10vh, 8rem) 3rem;
+	}
+
+	.hero-copy,
+	.hero-bottom {
+		position: relative;
+		z-index: 2;
+	}
+
+	.hero-copy h1 {
+		max-width: 11ch;
+		margin: 0;
+	}
+
+	.hero-bottom {
+		display: flex;
+		align-items: end;
+		justify-content: space-between;
+		gap: 2rem;
+	}
+
+	.hero-bottom .lede {
+		margin: 0;
+	}
+
+	.orb {
+		position: absolute;
+		border-radius: 50%;
+		filter: blur(1px);
+		opacity: 0.72;
+		pointer-events: none;
+	}
+
+	.orb-one {
+		top: 15%;
+		right: 5%;
+		width: clamp(10rem, 25vw, 22rem);
+		aspect-ratio: 1;
+		background: radial-gradient(circle at 30% 25%, #d9d4ff, var(--accent) 58%, transparent 70%);
+		animation: float 8s ease-in-out infinite;
+	}
+
+	.orb-two {
+		right: 30%;
+		bottom: 15%;
+		width: clamp(5rem, 12vw, 10rem);
+		aspect-ratio: 1;
+		background: radial-gradient(circle at 35% 25%, #fff, #bc70ff 55%, transparent 72%);
+		animation: float 10s 1s ease-in-out infinite reverse;
+	}
+
+	@keyframes float {
+		50% { transform: translate3d(1rem, -1.5rem, 0) rotate(8deg); }
+	}
+
+	.approach {
+		background: var(--surface);
+	}
+
+	.principles {
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
+		border-top: 1px solid var(--line);
+	}
+
+	.principles article {
+		padding: 2rem clamp(1rem, 3vw, 2.5rem) 0;
+		border-right: 1px solid var(--line);
+	}
+
+	.principles article:first-child {
+		padding-left: 0;
+	}
+
+	.principles article:last-child {
+		border: 0;
+	}
+
+	.principles span {
+		color: var(--accent);
+		font-size: 0.75rem;
+		font-weight: 700;
+	}
+
+	.principles h3 {
+		margin: 4rem 0 1rem;
+		font-family: var(--font-display);
+		font-size: clamp(1.8rem, 3vw, 2.5rem);
+		font-weight: 400;
+	}
+
+	.principles p {
+		max-width: 26rem;
+		color: var(--text-muted);
+	}
+
+	.profile {
+		display: grid;
+		grid-template-columns: minmax(0, 1.05fr) minmax(20rem, 0.95fr);
+		gap: clamp(3rem, 8vw, 8rem);
+		align-items: center;
+	}
+
+	.profile-visual img {
+		width: 100%;
+		aspect-ratio: 4 / 5;
+		border-radius: var(--radius-md);
+		object-fit: cover;
+	}
+
+	.profile-visual p {
+		margin: 0.8rem 0 0;
+		color: var(--text-muted);
+		font-size: 0.75rem;
+	}
+
+	.profile-copy h2 {
+		margin-bottom: 2rem;
+		font-family: var(--font-display);
+		font-size: clamp(2.8rem, 6vw, 5.5rem);
+		font-weight: 400;
+	}
+
+	.profile-copy > p:not(.eyebrow) {
+		color: var(--text-muted);
+		font-size: 1.1rem;
+	}
+
+	.profile-copy ul {
+		display: grid;
+		grid-template-columns: repeat(2, 1fr);
+		margin: 2rem 0;
+		padding: 0;
+		border-top: 1px solid var(--line);
+		list-style: none;
+	}
+
+	.profile-copy li {
+		padding: 0.8rem 0;
+		border-bottom: 1px solid var(--line);
+		font-size: 0.84rem;
+	}
+
+	@media (max-width: 48rem) {
+		.hero {
+			min-height: calc(100svh - 5rem);
+		}
+
+		.hero-bottom {
+			align-items: flex-start;
+			flex-direction: column;
+		}
+
+		.orb-one {
+			top: 35%;
+			right: -10%;
+		}
+
+		.principles,
+		.profile {
+			grid-template-columns: 1fr;
+		}
+
+		.principles article,
+		.principles article:first-child {
+			padding: 1.5rem 0;
+			border-right: 0;
+			border-bottom: 1px solid var(--line);
+		}
+
+		.principles h3 {
+			margin-top: 2rem;
+		}
+	}
+</style>

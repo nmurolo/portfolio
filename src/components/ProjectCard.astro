@@ -1,0 +1,128 @@
+---
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+	project: CollectionEntry<'projects'>;
+	index?: number;
+}
+
+const { project, index = 0 } = Astro.props;
+const { title, summary, year, services, cover, accent } = project.data;
+---
+
+<article class="project-card" data-reveal style={`--card-accent: ${accent}; --delay: ${index * 70}ms`}>
+	<a class="project-image" href={`/projects/${project.id}/`} aria-label={`View ${title} case study`}>
+		<img src={cover.src} alt={cover.alt} loading={index > 0 ? 'lazy' : 'eager'} />
+		<span class="view-project" aria-hidden="true">View project ↗</span>
+	</a>
+	<div class="project-meta">
+		<div>
+			<h3><a href={`/projects/${project.id}/`}>{title}</a></h3>
+			<p>{summary}</p>
+		</div>
+		<div class="details">
+			<span>{year}</span>
+			<span>{services.slice(0, 2).join(' · ')}</span>
+		</div>
+	</div>
+</article>
+
+<style>
+	.project-card {
+		transition-delay: var(--delay);
+	}
+
+	.project-image {
+		position: relative;
+		display: block;
+		overflow: hidden;
+		aspect-ratio: 4 / 3;
+		border-radius: var(--radius-md);
+		background: color-mix(in srgb, var(--card-accent) 20%, var(--surface));
+	}
+
+	.project-image img {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		transition: transform 700ms var(--ease);
+	}
+
+	.project-image:hover img {
+		transform: scale(1.025);
+	}
+
+	.view-project {
+		position: absolute;
+		right: 1rem;
+		bottom: 1rem;
+		padding: 0.7rem 0.9rem;
+		border-radius: 999px;
+		background: rgba(15, 15, 17, 0.84);
+		color: #fff;
+		font-size: 0.76rem;
+		font-weight: 700;
+		opacity: 0;
+		transform: translateY(0.5rem);
+		transition:
+			opacity 250ms ease,
+			transform 250ms var(--ease);
+		backdrop-filter: blur(0.5rem);
+	}
+
+	.project-image:hover .view-project {
+		opacity: 1;
+		transform: none;
+	}
+
+	.project-meta {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) auto;
+		gap: 2rem;
+		padding-top: 1.35rem;
+	}
+
+	h3 {
+		margin-bottom: 0.6rem;
+		font-family: var(--font-display);
+		font-size: clamp(1.8rem, 4vw, 2.7rem);
+		font-weight: 400;
+	}
+
+	h3 a {
+		text-decoration: none;
+	}
+
+	p {
+		max-width: 42rem;
+		margin: 0;
+		color: var(--text-muted);
+		line-height: 1.55;
+	}
+
+	.details {
+		display: flex;
+		flex-direction: column;
+		align-items: flex-end;
+		gap: 0.3rem;
+		color: var(--text-muted);
+		font-size: 0.74rem;
+		text-align: right;
+	}
+
+	@media (max-width: 38rem) {
+		.project-meta {
+			grid-template-columns: 1fr;
+			gap: 1rem;
+		}
+
+		.details {
+			align-items: flex-start;
+			text-align: left;
+		}
+
+		.view-project {
+			display: none;
+		}
+	}
+</style>

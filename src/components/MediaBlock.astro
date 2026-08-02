@@ -1,0 +1,72 @@
+---
+interface Props {
+	type?: 'image' | 'video';
+	src: string;
+	alt?: string;
+	caption?: string;
+	poster?: string;
+	captions?: string;
+	loading?: 'lazy' | 'eager';
+}
+
+const {
+	type = 'image',
+	src,
+	alt = '',
+	caption,
+	poster,
+	captions,
+	loading = 'lazy',
+} = Astro.props;
+
+const isEmbed = type === 'video' && /youtube(?:-nocookie)?\.com|youtu\.be|vimeo\.com/.test(src);
+---
+
+<figure class="media-block" data-reveal>
+	<div class="media-frame">
+		{type === 'image' && <img src={src} alt={alt} loading={loading} />}
+		{type === 'video' && isEmbed && (
+			<iframe
+				src={src}
+				title={alt || 'Project video'}
+				loading="lazy"
+				allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+				allowfullscreen
+			></iframe>
+		)}
+		{type === 'video' && !isEmbed && (
+			<video src={src} poster={poster} controls playsinline aria-label={alt}>
+				{captions && <track kind="captions" src={captions} srclang="en" label="English" default />}
+			</video>
+		)}
+	</div>
+	{caption && <figcaption>{caption}</figcaption>}
+</figure>
+
+<style>
+	.media-block {
+		margin: 0;
+	}
+
+	.media-frame {
+		overflow: hidden;
+		aspect-ratio: 16 / 10;
+		border-radius: var(--radius-md);
+		background: var(--surface-soft);
+	}
+
+	img,
+	video,
+	iframe {
+		width: 100%;
+		height: 100%;
+		border: 0;
+		object-fit: cover;
+	}
+
+	figcaption {
+		margin-top: 0.8rem;
+		color: var(--text-muted);
+		font-size: 0.78rem;
+	}
+</style>

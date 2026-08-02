@@ -1,0 +1,109 @@
+---
+import { site } from '../data/site';
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title={`Contact — ${site.name}`} description={`Get in touch with ${site.name} about a project or collaboration.`}>
+	<section class="contact container">
+		<div class="contact-heading">
+			<p class="eyebrow">Contact</p>
+			<h1 class="display">Let’s talk about what’s next.</h1>
+		</div>
+
+		<div class="contact-details" data-reveal>
+			<p class="lede">
+				Share a little about your idea, timeline, and what you need help with. I’ll get back to you as soon
+				as I can.
+			</p>
+			<a class="email" href={`mailto:${site.email}`}>{site.email}</a>
+			<div class="meta-grid">
+				<div>
+					<p class="label">Availability</p>
+					<p>{site.availability}</p>
+				</div>
+				<div>
+					<p class="label">Location</p>
+					<p>{site.location}</p>
+				</div>
+			</div>
+			<nav aria-label="Social links">
+				{site.socials.map((social) => (
+					<a href={social.href} target="_blank" rel="noreferrer">
+						{social.label}<span aria-hidden="true"> ↗</span>
+					</a>
+				))}
+			</nav>
+		</div>
+	</section>
+</Layout>
+
+<style>
+	.contact {
+		display: grid;
+		grid-template-columns: minmax(0, 1.25fr) minmax(20rem, 0.75fr);
+		gap: clamp(4rem, 10vw, 10rem);
+		min-height: calc(100svh - 5rem);
+		align-items: center;
+		padding-block: clamp(5rem, 12vw, 10rem);
+	}
+
+	h1 {
+		max-width: 8ch;
+		margin: 0;
+	}
+
+	.contact-details {
+		display: grid;
+		gap: 2rem;
+	}
+
+	.contact-details .lede {
+		margin: 0;
+	}
+
+	.email {
+		width: fit-content;
+		color: var(--accent-strong);
+		font-family: var(--font-display);
+		font-size: clamp(1.8rem, 4vw, 3rem);
+		letter-spacing: -0.04em;
+	}
+
+	.meta-grid {
+		display: grid;
+		grid-template-columns: repeat(2, 1fr);
+		gap: 1.5rem;
+		padding-block: 1.5rem;
+		border-block: 1px solid var(--line);
+	}
+
+	.meta-grid p {
+		margin: 0;
+		color: var(--text-muted);
+		font-size: 0.85rem;
+	}
+
+	.meta-grid .label {
+		margin-bottom: 0.4rem;
+		color: var(--text);
+		font-size: 0.7rem;
+		font-weight: 700;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+	}
+
+	nav {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.7rem 1.5rem;
+		font-size: 0.86rem;
+		font-weight: 650;
+	}
+
+	@media (max-width: 50rem) {
+		.contact {
+			grid-template-columns: 1fr;
+			min-height: auto;
+		}
+	}
+</style>

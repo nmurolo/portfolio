@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" role="img" aria-labelledby="title">
+  <title id="title">Nicholas Murolo portfolio</title>
+  <defs><linearGradient id="bg" x2="1" y2="1"><stop stop-color="#171719"/><stop offset="1" stop-color="#35286f"/></linearGradient></defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <circle cx="980" cy="110" r="240" fill="#755cff" opacity=".8"/>
+  <circle cx="880" cy="570" r="150" fill="#b66cff" opacity=".5"/>
+  <text x="80" y="115" font-family="Arial,sans-serif" font-size="24" font-weight="700" letter-spacing="5" fill="#a99aff">PORTFOLIO</text>
+  <text x="80" y="360" font-family="Georgia,serif" font-size="110" fill="#f5f4f0">Nicholas Murolo</text>
+  <text x="86" y="425" font-family="Arial,sans-serif" font-size="28" fill="#bbb8c5">Designer &amp; Developer</text>
+</svg>

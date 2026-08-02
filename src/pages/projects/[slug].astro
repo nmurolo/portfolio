@@ -1,0 +1,212 @@
+---
+import { getCollection, render, type CollectionEntry } from 'astro:content';
+import ContactCta from '../../components/ContactCta.astro';
+import MediaBlock from '../../components/MediaBlock.astro';
+import { site } from '../../data/site';
+import Layout from '../../layouts/Layout.astro';
+
+export async function getStaticPaths() {
+	const projects = await getCollection('projects');
+	return projects.map((project) => ({
+		params: { slug: project.id },
+		props: { project },
+	}));
+}
+
+interface Props {
+	project: CollectionEntry<'projects'>;
+}
+
+const { project } = Astro.props;
+const { Content } = await render(project);
+const { title, summary, year, role, services, cover, links, media, accent } = project.data;
+
+const allProjects = (await getCollection('projects')).sort((a, b) => a.data.order - b.data.order);
+const currentIndex = allProjects.findIndex((item) => item.id === project.id);
+const nextProject = allProjects[(currentIndex + 1) % allProjects.length];
+---
+
+<Layout
+	title={`${title} — ${site.name}`}
+	description={summary}
+	image={cover.src}
+>
+	<article class="project" style={`--project-accent: ${accent}`}>
+		<header class="project-hero container">
+			<div class="project-heading">
+				<p class="eyebrow">Selected work · {year}</p>
+				<h1 class="display">{title}</h1>
+			</div>
+			<p class="lede">{summary}</p>
+		</header>
+
+		<div class="cover container" data-reveal>
+			<img src={cover.src} alt={cover.alt} />
+		</div>
+
+		<div class="project-body container">
+			<aside>
+				<div>
+					<p class="label">Role</p>
+					<p>{role}</p>
+				</div>
+				<div>
+					<p class="label">Services</p>
+					<ul>{services.map((service) => <li>{service}</li>)}</ul>
+				</div>
+				{links.length > 0 && (
+					<div>
+						<p class="label">Links</p>
+						{links.map((link) => (
+							<a href={link.href} target="_blank" rel="noreferrer">{link.label} ↗</a>
+						))}
+					</div>
+				)}
+			</aside>
+			<div class="prose">
+				<Content />
+			</div>
+		</div>
+
+		{media.length > 0 && (
+			<div class="media-gallery container">
+				{media.map((item) => <MediaBlock {...item} />)}
+			</div>
+		)}
+
+		<section class="next-project container">
+			<p class="eyebrow">Next project</p>
+			<a href={`/projects/${nextProject.id}/`}>
+				<span>{nextProject.data.title}</span>
+				<span aria-hidden="true">↗</span>
+			</a>
+		</section>
+
+		<div class="section container">
+			<ContactCta compact />
+		</div>
+	</article>
+</Layout>
+
+<style>
+	.project-hero {
+		display: grid;
+		grid-template-columns: minmax(0, 1.25fr) minmax(18rem, 0.75fr);
+		gap: clamp(3rem, 10vw, 10rem);
+		align-items: end;
+		padding-block: clamp(5rem, 11vw, 10rem);
+	}
+
+	h1 {
+		margin: 0;
+	}
+
+	.project-hero .lede {
+		margin: 0;
+	}
+
+	.cover img {
+		width: 100%;
+		aspect-ratio: 16 / 10;
+		border-radius: var(--radius-lg);
+		background: color-mix(in srgb, var(--project-accent) 18%, var(--surface));
+		object-fit: cover;
+	}
+
+	.project-body {
+		display: grid;
+		grid-template-columns: minmax(12rem, 0.55fr) minmax(0, 1.45fr);
+		gap: clamp(3rem, 10vw, 10rem);
+		padding-block: var(--section-space);
+	}
+
+	aside {
+		display: grid;
+		align-content: start;
+		gap: 2rem;
+	}
+
+	aside p,
+	aside ul {
+		margin: 0;
+	}
+
+	aside ul {
+		padding: 0;
+		list-style: none;
+	}
+
+	aside p:not(.label),
+	aside li,
+	aside a {
+		color: var(--text-muted);
+		font-size: 0.85rem;
+	}
+
+	.label {
+		margin-bottom: 0.45rem;
+		font-size: 0.68rem;
+		font-weight: 750;
+		letter-spacing: 0.1em;
+		text-transform: uppercase;
+	}
+
+	.prose {
+		max-width: 48rem;
+	}
+
+	.prose :global(h2) {
+		margin: 4rem 0 1.25rem;
+		font-family: var(--font-display);
+		font-size: clamp(2.3rem, 5vw, 4rem);
+		font-weight: 400;
+	}
+
+	.prose :global(h2:first-child) {
+		margin-top: 0;
+	}
+
+	.prose :global(p) {
+		color: var(--text-muted);
+		font-size: clamp(1.05rem, 2vw, 1.2rem);
+		line-height: 1.75;
+	}
+
+	.media-gallery {
+		display: grid;
+		gap: clamp(2rem, 5vw, 5rem);
+		padding-bottom: var(--section-space);
+	}
+
+	.next-project {
+		padding-block: clamp(4rem, 8vw, 7rem);
+		border-block: 1px solid var(--line);
+	}
+
+	.next-project > a {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		font-family: var(--font-display);
+		font-size: clamp(3rem, 9vw, 8rem);
+		letter-spacing: -0.06em;
+		line-height: 1;
+		text-decoration: none;
+		transition: color 200ms ease;
+	}
+
+	.next-project > a:hover {
+		color: var(--project-accent);
+	}
+
+	@media (max-width: 48rem) {
+		.project-hero,
+		.project-body {
+			grid-template-columns: 1fr;
+		}
+
+		.project-hero {
+			gap: 2rem;
+		}
+	}
+</style>

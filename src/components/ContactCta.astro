@@ -1,0 +1,61 @@
+---
+import { site } from '../data/site';
+
+interface Props {
+	compact?: boolean;
+}
+
+const { compact = false } = Astro.props;
+---
+
+<section class:list={['contact-cta', { compact }]} data-reveal>
+	<div>
+		<p class="eyebrow">Start a conversation</p>
+		<h2>Let’s make something clear, useful, and memorable.</h2>
+	</div>
+	<div class="cta-action">
+		<p>{site.availability}</p>
+		<a class="button" href={`mailto:${site.email}`}>Email me <span aria-hidden="true">↗</span></a>
+	</div>
+</section>
+
+<style>
+	.contact-cta {
+		display: grid;
+		grid-template-columns: minmax(0, 1.4fr) minmax(14rem, 0.6fr);
+		gap: clamp(2rem, 8vw, 8rem);
+		align-items: end;
+		padding: clamp(2rem, 6vw, 5rem);
+		border-radius: var(--radius-lg);
+		background: var(--accent-soft);
+	}
+
+	h2 {
+		max-width: 13ch;
+		margin: 0;
+		font-family: var(--font-display);
+		font-size: clamp(2.7rem, 6vw, 5.5rem);
+		font-weight: 400;
+	}
+
+	.cta-action {
+		display: grid;
+		justify-items: start;
+		gap: 1.25rem;
+	}
+
+	.cta-action p {
+		margin: 0;
+		color: var(--text-muted);
+	}
+
+	.compact h2 {
+		font-size: clamp(2.5rem, 5vw, 4rem);
+	}
+
+	@media (max-width: 48rem) {
+		.contact-cta {
+			grid-template-columns: 1fr;
+		}
+	}
+</style>

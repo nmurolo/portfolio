@@ -1,0 +1,86 @@
+---
+import { site } from '../data/site';
+
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+	<div class="container">
+		<div class="footer-main">
+			<p class="footer-title">Have something in mind?</p>
+			<a class="footer-email" href={`mailto:${site.email}`}>{site.email}</a>
+		</div>
+		<div class="footer-meta">
+			<p>© {year} {site.name}</p>
+			<nav aria-label="Social links">
+				{site.socials.map((social) => (
+					<a href={social.href} target="_blank" rel="noreferrer">{social.label}</a>
+				))}
+			</nav>
+			<a href="#top">Back to top ↑</a>
+		</div>
+	</div>
+</footer>
+
+<style>
+	.site-footer {
+		padding-block: clamp(4rem, 8vw, 7rem) 2rem;
+		border-top: 1px solid var(--line);
+	}
+
+	.footer-main {
+		display: grid;
+		grid-template-columns: 1fr auto;
+		align-items: end;
+		gap: 2rem;
+		padding-bottom: clamp(3rem, 8vw, 6rem);
+	}
+
+	.footer-title {
+		max-width: 10ch;
+		margin: 0;
+		font-family: var(--font-display);
+		font-size: clamp(3rem, 8vw, 7rem);
+		letter-spacing: -0.06em;
+		line-height: 0.92;
+	}
+
+	.footer-email {
+		font-size: clamp(1rem, 2vw, 1.3rem);
+		font-weight: 650;
+	}
+
+	.footer-meta {
+		display: grid;
+		grid-template-columns: 1fr auto auto;
+		gap: 2rem;
+		padding-top: 1.5rem;
+		border-top: 1px solid var(--line);
+		color: var(--text-muted);
+		font-size: 0.78rem;
+	}
+
+	.footer-meta p {
+		margin: 0;
+	}
+
+	.footer-meta nav {
+		display: flex;
+		gap: 1.2rem;
+	}
+
+	@media (max-width: 48rem) {
+		.footer-main,
+		.footer-meta {
+			grid-template-columns: 1fr;
+		}
+
+		.footer-meta {
+			gap: 1rem;
+		}
+
+		.footer-meta nav {
+			flex-wrap: wrap;
+		}
+	}
+</style>
