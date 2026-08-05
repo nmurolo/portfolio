@@ -9,7 +9,6 @@ export const site = {
 	availability: 'Available for select projects',
 	navigation: [
 		{ label: 'About', href: '/about/' },
-		{ label: 'Life', href: '/life/' },
 		{ label: 'Contact', href: '/contact/' },
 	],
 	socials: [

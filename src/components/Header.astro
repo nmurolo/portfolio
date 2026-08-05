@@ -4,6 +4,7 @@ import { site } from '../data/site';
 import ThemeToggle from './ThemeToggle.astro';
 
 const projects = (await getCollection('projects')).sort((a, b) => a.data.order - b.data.order);
+const lifeEntries = (await getCollection('life')).sort((a, b) => a.data.order - b.data.order);
 ---
 
 <header class="site-header">
@@ -14,15 +15,43 @@ const projects = (await getCollection('projects')).sort((a, b) => a.data.order -
 		</a>
 
 		<nav class="desktop-nav" aria-label="Primary navigation">
-			<details class="project-menu">
-				<summary>Projects <span aria-hidden="true">⌄</span></summary>
-				<div class="project-dropdown">
+			<details class="nav-menu">
+				<summary>
+					Projects
+					<svg class="chevron" viewBox="0 0 12 12" aria-hidden="true">
+						<path d="m2.5 4.25 3.5 3.5 3.5-3.5"></path>
+					</svg>
+				</summary>
+				<div class="nav-dropdown">
 					<p>All projects</p>
 					{projects.map((project, index) => (
 						<a href={`/projects/${project.id}/`}>
 							<span>{String(index + 1).padStart(2, '0')}</span>
 							<strong>{project.data.title}</strong>
 							<small>{project.data.year}</small>
+						</a>
+					))}
+				</div>
+			</details>
+			<details class="nav-menu">
+				<summary>
+					Life
+					<svg class="chevron" viewBox="0 0 12 12" aria-hidden="true">
+						<path d="m2.5 4.25 3.5 3.5 3.5-3.5"></path>
+					</svg>
+				</summary>
+				<div class="nav-dropdown">
+					<p>Outside work</p>
+					<a href="/life/">
+						<span>00</span>
+						<strong>All personal notes</strong>
+						<small>Index</small>
+					</a>
+					{lifeEntries.map((entry, index) => (
+						<a href={`/life/${entry.id}/`}>
+							<span>{String(index + 1).padStart(2, '0')}</span>
+							<strong>{entry.data.title}</strong>
+							<small>{entry.data.category}</small>
 						</a>
 					))}
 				</div>
@@ -38,6 +67,11 @@ const projects = (await getCollection('projects')).sort((a, b) => a.data.order -
 					<p>Projects</p>
 					{projects.map((project) => (
 						<a class="project-link" href={`/projects/${project.id}/`}>{project.data.title}</a>
+					))}
+					<p>Life</p>
+					<a class="project-link" href="/life/">All personal notes</a>
+					{lifeEntries.map((entry) => (
+						<a class="project-link" href={`/life/${entry.id}/`}>{entry.data.title}</a>
 					))}
 					<p>Explore</p>
 					{site.navigation.map((item) => <a href={item.href}>{item.label}</a>)}
@@ -104,11 +138,11 @@ const projects = (await getCollection('projects')).sort((a, b) => a.data.order -
 		color: var(--text);
 	}
 
-	.project-menu {
+	.nav-menu {
 		position: relative;
 	}
 
-	.project-menu > summary {
+	.nav-menu > summary {
 		display: flex;
 		align-items: center;
 		gap: 0.35rem;
@@ -120,25 +154,31 @@ const projects = (await getCollection('projects')).sort((a, b) => a.data.order -
 		transition: color 180ms ease;
 	}
 
-	.project-menu > summary:hover,
-	.project-menu[open] > summary {
+	.nav-menu > summary:hover,
+	.nav-menu[open] > summary {
 		color: var(--text);
 	}
 
-	.project-menu > summary::-webkit-details-marker {
+	.nav-menu > summary::-webkit-details-marker {
 		display: none;
 	}
 
-	.project-menu > summary span {
-		font-size: 0.9rem;
+	.chevron {
+		width: 0.75rem;
+		height: 0.75rem;
+		fill: none;
+		stroke: currentColor;
+		stroke-linecap: round;
+		stroke-linejoin: round;
+		stroke-width: 1.5;
 		transition: transform 200ms var(--ease);
 	}
 
-	.project-menu[open] > summary span {
+	.nav-menu[open] > summary .chevron {
 		transform: rotate(180deg);
 	}
 
-	.project-dropdown {
+	.nav-dropdown {
 		position: absolute;
 		top: calc(100% + 1.2rem);
 		left: 50%;
@@ -151,14 +191,14 @@ const projects = (await getCollection('projects')).sort((a, b) => a.data.order -
 		transform: translateX(-50%);
 	}
 
-	.project-dropdown::before {
+	.nav-dropdown::before {
 		position: absolute;
 		inset: -1.3rem 0 auto;
 		height: 1.3rem;
 		content: "";
 	}
 
-	.project-dropdown p {
+	.nav-dropdown p {
 		margin: 0;
 		padding: 0.5rem 0.65rem 0.75rem;
 		color: var(--text-muted);
@@ -168,7 +208,7 @@ const projects = (await getCollection('projects')).sort((a, b) => a.data.order -
 		text-transform: uppercase;
 	}
 
-	.desktop-nav .project-dropdown a {
+	.desktop-nav .nav-dropdown a {
 		display: grid;
 		grid-template-columns: 2rem 1fr auto;
 		gap: 0.65rem;
@@ -178,18 +218,18 @@ const projects = (await getCollection('projects')).sort((a, b) => a.data.order -
 		color: var(--text);
 	}
 
-	.desktop-nav .project-dropdown a:hover {
+	.desktop-nav .nav-dropdown a:hover {
 		background: var(--surface-soft);
 	}
 
-	.project-dropdown span,
-	.project-dropdown small {
+	.nav-dropdown span,
+	.nav-dropdown small {
 		color: var(--text-muted);
 		font-size: 0.68rem;
 		font-weight: 500;
 	}
 
-	.project-dropdown strong {
+	.nav-dropdown strong {
 		font-family: var(--font-display);
 		font-size: 1.15rem;
 		font-weight: 400;
