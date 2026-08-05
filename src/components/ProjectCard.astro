@@ -7,18 +7,23 @@ interface Props {
 }
 
 const { project, index = 0 } = Astro.props;
-const { title, summary, year, services, cover, accent } = project.data;
+const { title, summary, year, services, cover, accent, featured } = project.data;
+const feature = typeof featured === 'object' ? featured : {};
+const featureTitle = feature.title ?? title;
+const featureSummary = feature.summary ?? summary;
+const featureCover = feature.cover ?? cover;
 ---
 
 <article class="project-card" data-reveal style={`--card-accent: ${accent}; --delay: ${index * 70}ms`}>
 	<a class="project-image" href={`/projects/${project.id}/`} aria-label={`View ${title} case study`}>
-		<img src={cover.src} alt={cover.alt} loading={index > 0 ? 'lazy' : 'eager'} />
+		<img src={featureCover.src} alt={featureCover.alt} loading={index > 0 ? 'lazy' : 'eager'} />
 		<span class="view-project" aria-hidden="true">View project ↗</span>
 	</a>
 	<div class="project-meta">
 		<div>
-			<h3><a href={`/projects/${project.id}/`}>{title}</a></h3>
-			<p>{summary}</p>
+			{feature.label && <span class="feature-label">{feature.label}</span>}
+			<h3><a href={`/projects/${project.id}/`}>{featureTitle}</a></h3>
+			<p>{featureSummary}</p>
 		</div>
 		<div class="details">
 			<span>{year}</span>
@@ -87,6 +92,16 @@ const { title, summary, year, services, cover, accent } = project.data;
 		font-family: var(--font-display);
 		font-size: clamp(1.8rem, 4vw, 2.7rem);
 		font-weight: 400;
+	}
+
+	.feature-label {
+		display: block;
+		margin-bottom: 0.65rem;
+		color: var(--accent-strong);
+		font-size: 0.68rem;
+		font-weight: 750;
+		letter-spacing: 0.1em;
+		text-transform: uppercase;
 	}
 
 	h3 a {

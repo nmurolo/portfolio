@@ -16,8 +16,9 @@ const {
 	image = '/images/og-default.svg',
 } = Astro.props;
 
-const canonical = new URL(Astro.url.pathname, site.url);
-const socialImage = new URL(image, site.url);
+const baseUrl = Astro.site ?? Astro.url;
+const canonical = new URL(Astro.url.pathname, baseUrl);
+const socialImage = new URL(image, baseUrl);
 ---
 
 <!doctype html>

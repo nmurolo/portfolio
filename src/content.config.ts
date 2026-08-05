@@ -18,7 +18,22 @@ const projects = defineCollection({
 		year: z.string(),
 		role: z.string(),
 		services: z.array(z.string()).default([]),
-		featured: z.boolean().default(false),
+		featured: z
+			.union([
+				z.boolean(),
+				z.object({
+					label: z.string().optional(),
+					title: z.string().optional(),
+					summary: z.string().optional(),
+					cover: z
+						.object({
+							src: z.string(),
+							alt: z.string(),
+						})
+						.optional(),
+				}),
+			])
+			.default(false),
 		order: z.number().default(99),
 		cover: z.object({
 			src: z.string(),
@@ -37,4 +52,21 @@ const projects = defineCollection({
 	}),
 });
 
-export const collections = { projects };
+const life = defineCollection({
+	loader: glob({ base: './src/content/life', pattern: '**/*.{md,mdx}' }),
+	schema: z.object({
+		title: z.string(),
+		summary: z.string(),
+		category: z.string(),
+		order: z.number().default(99),
+		cover: z
+			.object({
+				src: z.string(),
+				alt: z.string(),
+			})
+			.optional(),
+		accent: z.string().default('#c95f3c'),
+	}),
+});
+
+export const collections = { projects, life };

@@ -7,7 +7,13 @@ services:
   - Product strategy
   - Interaction design
   - Design system
-featured: true
+featured:
+  label: Featured product work
+  title: Atlas — planning with less noise
+  summary: A focused home-page introduction to the project. The full case study keeps its own title, summary, process, media, and outcome.
+  cover:
+    src: /images/project-atlas.svg
+    alt: Abstract violet interface panels introducing Atlas Studio
 order: 1
 cover:
   src: /images/project-atlas.svg

@@ -1,0 +1,212 @@
+---
+import { getCollection, render, type CollectionEntry } from 'astro:content';
+import { site } from '../../data/site';
+import Layout from '../../layouts/Layout.astro';
+
+export async function getStaticPaths() {
+	const entries = await getCollection('life');
+	return entries.map((entry) => ({
+		params: { slug: entry.id },
+		props: { entry },
+	}));
+}
+
+interface Props {
+	entry: CollectionEntry<'life'>;
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+const { title, summary, category, cover, accent } = entry.data;
+---
+
+<Layout title={`${title} — ${site.name}`} description={summary} image={cover?.src}>
+	<article class="life-entry" style={`--life-accent: ${accent}`}>
+		<header class="entry-hero container">
+			<a class="back" href="/life/">← All personal notes</a>
+			<p class="eyebrow">{category}</p>
+			<h1 class="display">{title}</h1>
+			<p class="lede">{summary}</p>
+			<span class="character" aria-hidden="true">趣</span>
+		</header>
+
+		<div class="cover container" data-reveal>
+			{cover ? (
+				<img src={cover.src} alt={cover.alt} />
+			) : (
+				<div class="cover-placeholder" role="img" aria-label="Image placeholder">
+					<span>Add travel or hobby photography here</span>
+				</div>
+			)}
+		</div>
+
+		<div class="story container">
+			<aside>
+				<p>Personal note</p>
+				<span>
+					This area is intentionally separate from the professional case studies. Edit the Markdown to
+					make it entirely your own.
+				</span>
+			</aside>
+			<div class="prose">
+				<Content />
+			</div>
+		</div>
+
+		<nav class="entry-footer container" aria-label="Personal notes">
+			<a href="/life/">
+				<span>Explore more outside work</span>
+				<span aria-hidden="true">↗</span>
+			</a>
+		</nav>
+	</article>
+</Layout>
+
+<style>
+	.entry-hero {
+		position: relative;
+		overflow: hidden;
+		padding-block: clamp(4rem, 10vw, 9rem);
+	}
+
+	.back {
+		display: inline-block;
+		margin-bottom: clamp(4rem, 9vw, 8rem);
+		color: var(--text-muted);
+		font-size: 0.78rem;
+		font-weight: 650;
+		text-decoration: none;
+	}
+
+	h1 {
+		position: relative;
+		z-index: 1;
+		max-width: 11ch;
+		margin: 0 0 2.5rem;
+	}
+
+	.entry-hero .lede {
+		position: relative;
+		z-index: 1;
+		margin: 0;
+	}
+
+	.character {
+		position: absolute;
+		right: var(--gutter);
+		bottom: -0.15em;
+		color: color-mix(in srgb, var(--life-accent) 18%, transparent);
+		font-family: var(--font-display);
+		font-size: clamp(12rem, 35vw, 34rem);
+		line-height: 0.75;
+		pointer-events: none;
+	}
+
+	.cover img,
+	.cover-placeholder {
+		width: 100%;
+		aspect-ratio: 16 / 10;
+		border-radius: var(--radius-lg);
+		object-fit: cover;
+	}
+
+	.cover-placeholder {
+		display: grid;
+		place-items: center;
+		border: 1px solid var(--line);
+		background: var(--surface-soft);
+		color: var(--text-muted);
+	}
+
+	.cover-placeholder span {
+		padding: 0.7rem 0.9rem;
+		border: 1px solid var(--line);
+		border-radius: 999px;
+		font-size: 0.7rem;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+	}
+
+	.story {
+		display: grid;
+		grid-template-columns: minmax(11rem, 0.5fr) minmax(0, 1.5fr);
+		gap: clamp(3rem, 10vw, 10rem);
+		padding-block: var(--section-space);
+	}
+
+	aside {
+		padding-top: 0.5rem;
+	}
+
+	aside p {
+		margin-bottom: 0.5rem;
+		color: var(--life-accent);
+		font-size: 0.68rem;
+		font-weight: 750;
+		letter-spacing: 0.1em;
+		text-transform: uppercase;
+	}
+
+	aside span {
+		display: block;
+		max-width: 18rem;
+		color: var(--text-muted);
+		font-size: 0.8rem;
+		line-height: 1.6;
+	}
+
+	.prose {
+		max-width: 48rem;
+	}
+
+	.prose :global(h2) {
+		margin: 4rem 0 1.25rem;
+		font-family: var(--font-display);
+		font-size: clamp(2.5rem, 5vw, 4.4rem);
+		font-weight: 400;
+	}
+
+	.prose :global(h2:first-child) {
+		margin-top: 0;
+	}
+
+	.prose :global(h3) {
+		margin: 2.75rem 0 0.8rem;
+		font-family: var(--font-display);
+		font-size: clamp(1.6rem, 3vw, 2.4rem);
+		font-weight: 400;
+	}
+
+	.prose :global(p),
+	.prose :global(li) {
+		color: var(--text-muted);
+		font-size: clamp(1.03rem, 2vw, 1.17rem);
+		line-height: 1.8;
+	}
+
+	.prose :global(strong) {
+		color: var(--text);
+	}
+
+	.entry-footer {
+		padding-block: clamp(4rem, 8vw, 7rem);
+		border-top: 1px solid var(--line);
+	}
+
+	.entry-footer a {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		font-family: var(--font-display);
+		font-size: clamp(2.5rem, 7vw, 6rem);
+		letter-spacing: -0.05em;
+		line-height: 1;
+		text-decoration: none;
+	}
+
+	@media (max-width: 48rem) {
+		.story {
+			grid-template-columns: 1fr;
+		}
+	}
+</style>

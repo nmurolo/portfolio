@@ -4,13 +4,12 @@ export const site = {
 	title: 'Nicholas Murolo — Designer & Developer',
 	description:
 		'A portfolio of thoughtful digital products, visual systems, and interactive experiences by Nicholas Murolo.',
-	url: 'https://example.com',
 	email: 'hello@example.com',
 	location: 'Based in your city · Available worldwide',
 	availability: 'Available for select projects',
 	navigation: [
-		{ label: 'Work', href: '/#work' },
 		{ label: 'About', href: '/about/' },
+		{ label: 'Life', href: '/life/' },
 		{ label: 'Contact', href: '/contact/' },
 	],
 	socials: [

@@ -7,7 +7,7 @@ services:
   - Visual identity
   - Editorial design
   - Web development
-featured: true
+featured: false
 order: 2
 cover:
   src: /images/project-field-notes.svg
