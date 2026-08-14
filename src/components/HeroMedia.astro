@@ -1,0 +1,56 @@
+---
+interface Props {
+	type?: 'video' | 'image';
+	src: string;
+	poster?: string;
+	alt?: string;
+}
+
+const { type = 'video', src, poster, alt = '' } = Astro.props;
+const isGif = /\.gif(\?|$)/i.test(src);
+---
+
+<div class="hero-media">
+	{type === 'image' || isGif ? (
+		<img src={src} alt={alt} />
+	) : (
+		<video
+			class="hero-clip"
+			src={src}
+			poster={poster || undefined}
+			autoplay
+			muted
+			loop
+			playsinline
+			preload="metadata"
+			aria-label={alt || undefined}
+		></video>
+	)}
+</div>
+
+<script>
+	const clip = document.querySelector<HTMLVideoElement>('.hero-clip');
+	if (clip && matchMedia('(prefers-reduced-motion: reduce)').matches) {
+		clip.removeAttribute('autoplay');
+		clip.pause();
+		clip.controls = true;
+	}
+</script>
+
+<style>
+	.hero-media {
+		position: relative;
+		z-index: 2;
+		overflow: hidden;
+		width: min(100%, 32rem);
+		margin-left: auto;
+		border-radius: var(--radius-md);
+	}
+
+	img,
+	video {
+		width: 100%;
+		height: auto;
+		display: block;
+	}
+</style>

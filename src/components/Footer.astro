@@ -1,15 +1,18 @@
 ---
+import ConversationCta from './ConversationCta.astro';
 import { site } from '../data/site';
 
+interface Props {
+	cta?: boolean;
+}
+
+const { cta = true } = Astro.props;
 const year = new Date().getFullYear();
 ---
 
 <footer class="site-footer">
 	<div class="container">
-		<div class="footer-main">
-			<p class="footer-title">Have something in mind?</p>
-			<a class="footer-email" href={`mailto:${site.email}`}>{site.email}</a>
-		</div>
+		{cta && <ConversationCta />}
 		<div class="footer-meta">
 			<p>© {year} {site.name}</p>
 			<nav aria-label="Social links">
@@ -24,40 +27,22 @@ const year = new Date().getFullYear();
 
 <style>
 	.site-footer {
-		padding-block: clamp(4rem, 8vw, 7rem) 2rem;
-		border-top: 1px solid var(--line);
-	}
-
-	.footer-main {
-		display: grid;
-		grid-template-columns: 1fr auto;
-		align-items: end;
-		gap: 2rem;
-		padding-bottom: clamp(3rem, 8vw, 6rem);
-	}
-
-	.footer-title {
-		max-width: 10ch;
-		margin: 0;
-		font-family: var(--font-display);
-		font-size: clamp(3rem, 8vw, 7rem);
-		letter-spacing: -0.06em;
-		line-height: 0.92;
-	}
-
-	.footer-email {
-		font-size: clamp(1rem, 2vw, 1.3rem);
-		font-weight: 650;
+		padding-block: clamp(2.5rem, 5vw, 4rem) 1.5rem;
 	}
 
 	.footer-meta {
 		display: grid;
 		grid-template-columns: 1fr auto auto;
 		gap: 2rem;
-		padding-top: 1.5rem;
-		border-top: 1px solid var(--line);
+		margin-top: 1.25rem;
+		padding-top: 1.1rem;
 		color: var(--text-muted);
 		font-size: 0.78rem;
+	}
+
+	.footer-meta:first-child {
+		margin-top: 0;
+		padding-top: 0;
 	}
 
 	.footer-meta p {
@@ -70,12 +55,8 @@ const year = new Date().getFullYear();
 	}
 
 	@media (max-width: 48rem) {
-		.footer-main,
 		.footer-meta {
 			grid-template-columns: 1fr;
-		}
-
-		.footer-meta {
 			gap: 1rem;
 		}
 

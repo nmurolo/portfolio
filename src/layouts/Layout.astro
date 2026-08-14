@@ -8,12 +8,14 @@ interface Props {
 	title?: string;
 	description?: string;
 	image?: string;
+	footerCta?: boolean;
 }
 
 const {
 	title = site.title,
 	description = site.description,
-	image = '/images/og-default.svg',
+	image = '/images/profile-picture.png',
+	footerCta = true,
 } = Astro.props;
 
 const baseUrl = Astro.site ?? Astro.url;
@@ -56,10 +58,12 @@ const socialImage = new URL(image, baseUrl);
 		<main id="main-content">
 			<slot />
 		</main>
-		<Footer />
+		<Footer cta={footerCta} />
 		<script>
 			const revealItems = document.querySelectorAll('[data-reveal]');
-			if ('IntersectionObserver' in window && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+			const prefersReducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+			if ('IntersectionObserver' in window && !prefersReducedMotion) {
 				const observer = new IntersectionObserver(
 					(entries) => {
 						entries.forEach((entry) => {
@@ -75,6 +79,46 @@ const socialImage = new URL(image, baseUrl);
 			} else {
 				revealItems.forEach((item) => item.classList.add('is-visible'));
 			}
+
+			function smoothScrollTo(target) {
+				const header = document.querySelector('.site-header');
+				const offset = header instanceof HTMLElement ? header.getBoundingClientRect().height + 12 : 96;
+				const end = Math.max(0, target.getBoundingClientRect().top + window.scrollY - offset);
+				const start = window.scrollY;
+				const distance = end - start;
+
+				if (prefersReducedMotion || Math.abs(distance) < 2) {
+					window.scrollTo(0, end);
+					return;
+				}
+
+				const duration = Math.min(1100, Math.max(650, Math.abs(distance) * 0.55));
+				const started = performance.now();
+				const ease = (t) => 1 - Math.pow(1 - t, 3);
+
+				const step = (now) => {
+					const t = Math.min(1, (now - started) / duration);
+					window.scrollTo(0, start + distance * ease(t));
+					if (t < 1) requestAnimationFrame(step);
+				};
+
+				requestAnimationFrame(step);
+			}
+
+			document.addEventListener('click', (event) => {
+				const link = event.composedPath().find((node) => node instanceof HTMLAnchorElement);
+				if (!(link instanceof HTMLAnchorElement)) return;
+
+				const href = link.getAttribute('href');
+				if (!href?.startsWith('#')) return;
+
+				const target = document.getElementById(href.slice(1));
+				if (!target) return;
+
+				event.preventDefault();
+				smoothScrollTo(target);
+				history.pushState(null, '', href);
+			});
 		</script>
 	</body>
 </html>

@@ -23,7 +23,7 @@ const isEmbed = type === 'video' && /youtube(?:-nocookie)?\.com|youtu\.be|vimeo\
 ---
 
 <figure class="media-block" data-reveal>
-	<div class="media-frame">
+	<div class:list={['media-frame', { 'is-image': type === 'image' }]}>
 		{type === 'image' && <img src={src} alt={alt} loading={loading} />}
 		{type === 'video' && isEmbed && (
 			<iframe
@@ -50,12 +50,20 @@ const isEmbed = type === 'video' && /youtube(?:-nocookie)?\.com|youtu\.be|vimeo\
 
 	.media-frame {
 		overflow: hidden;
-		aspect-ratio: 16 / 10;
 		border-radius: var(--radius-md);
 		background: var(--surface-soft);
 	}
 
-	img,
+	.media-frame:not(.is-image) {
+		aspect-ratio: 16 / 10;
+	}
+
+	img {
+		width: 100%;
+		height: auto;
+		display: block;
+	}
+
 	video,
 	iframe {
 		width: 100%;

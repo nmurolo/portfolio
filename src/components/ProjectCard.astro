@@ -1,5 +1,6 @@
 ---
 import type { CollectionEntry } from 'astro:content';
+import { projectCardTags } from '../lib/projects';
 
 interface Props {
 	project: CollectionEntry<'projects'>;
@@ -7,28 +8,33 @@ interface Props {
 }
 
 const { project, index = 0 } = Astro.props;
-const { title, summary, year, services, cover, accent, featured } = project.data;
+const { title, summary, year, cover, accent, featured } = project.data;
 const feature = typeof featured === 'object' ? featured : {};
-const featureTitle = feature.title ?? title;
+const displayTitle = feature.title ?? title ?? project.id;
 const featureSummary = feature.summary ?? summary;
 const featureCover = feature.cover ?? cover;
+const tags = projectCardTags(project.data);
 ---
 
-<article class="project-card" data-reveal style={`--card-accent: ${accent}; --delay: ${index * 70}ms`}>
-	<a class="project-image" href={`/projects/${project.id}/`} aria-label={`View ${title} case study`}>
-		<img src={featureCover.src} alt={featureCover.alt} loading={index > 0 ? 'lazy' : 'eager'} />
-		<span class="view-project" aria-hidden="true">View project ↗</span>
-	</a>
+<article class:list={['project-card', { 'has-cover': Boolean(featureCover) }]} data-reveal style={`--card-accent: ${accent}; --delay: ${index * 70}ms`}>
+	{featureCover && (
+		<a class="project-image" href={`/projects/${project.id}/`} aria-label={`View ${displayTitle} case study`}>
+			<img src={featureCover.src} alt={featureCover.alt} loading={index > 0 ? 'lazy' : 'eager'} />
+			<span class="view-project" aria-hidden="true">View project ↗</span>
+		</a>
+	)}
 	<div class="project-meta">
 		<div>
 			{feature.label && <span class="feature-label">{feature.label}</span>}
-			<h3><a href={`/projects/${project.id}/`}>{featureTitle}</a></h3>
-			<p>{featureSummary}</p>
+			<h3><a href={`/projects/${project.id}/`}>{displayTitle}</a></h3>
+			{featureSummary && <p>{featureSummary}</p>}
 		</div>
-		<div class="details">
-			<span>{year}</span>
-			<span>{services.slice(0, 2).join(' · ')}</span>
-		</div>
+		{(year || tags) && (
+			<div class="details">
+				{year && <span>{year}</span>}
+				{tags && <span>{tags}</span>}
+			</div>
+		)}
 	</div>
 </article>
 
@@ -41,15 +47,14 @@ const featureCover = feature.cover ?? cover;
 		position: relative;
 		display: block;
 		overflow: hidden;
-		aspect-ratio: 4 / 3;
 		border-radius: var(--radius-md);
 		background: color-mix(in srgb, var(--card-accent) 20%, var(--surface));
 	}
 
 	.project-image img {
 		width: 100%;
-		height: 100%;
-		object-fit: cover;
+		height: auto;
+		display: block;
 		transition: transform 700ms var(--ease);
 	}
 
@@ -84,6 +89,9 @@ const featureCover = feature.cover ?? cover;
 		display: grid;
 		grid-template-columns: minmax(0, 1fr) auto;
 		gap: 2rem;
+	}
+
+	.has-cover .project-meta {
 		padding-top: 1.35rem;
 	}
 

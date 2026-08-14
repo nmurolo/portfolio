@@ -27,8 +27,8 @@ const lifeEntries = (await getCollection('life')).sort((a, b) => a.data.order - 
 					{projects.map((project, index) => (
 						<a href={`/projects/${project.id}/`}>
 							<span>{String(index + 1).padStart(2, '0')}</span>
-							<strong>{project.data.title}</strong>
-							<small>{project.data.year}</small>
+							<strong>{project.data.title ?? project.id}</strong>
+							{project.data.year && <small>{project.data.year}</small>}
 						</a>
 					))}
 				</div>
@@ -41,7 +41,7 @@ const lifeEntries = (await getCollection('life')).sort((a, b) => a.data.order - 
 					</svg>
 				</summary>
 				<div class="nav-dropdown">
-					<p>Outside work</p>
+					<p>Outside the office</p>
 					<a href="/life/">
 						<span>00</span>
 						<strong>All personal notes</strong>
@@ -66,7 +66,7 @@ const lifeEntries = (await getCollection('life')).sort((a, b) => a.data.order - 
 				<nav aria-label="Mobile navigation">
 					<p>Projects</p>
 					{projects.map((project) => (
-						<a class="project-link" href={`/projects/${project.id}/`}>{project.data.title}</a>
+						<a class="project-link" href={`/projects/${project.id}/`}>{project.data.title ?? project.id}</a>
 					))}
 					<p>Life</p>
 					<a class="project-link" href="/life/">All personal notes</a>
@@ -80,6 +80,19 @@ const lifeEntries = (await getCollection('life')).sort((a, b) => a.data.order - 
 		</div>
 	</div>
 </header>
+
+<script>
+	const menus = document.querySelectorAll<HTMLDetailsElement>('.desktop-nav .nav-menu');
+
+	menus.forEach((menu) => {
+		menu.addEventListener('toggle', () => {
+			if (!menu.open) return;
+			menus.forEach((other) => {
+				if (other !== menu) other.open = false;
+			});
+		});
+	});
+</script>
 
 <style>
 	.site-header {

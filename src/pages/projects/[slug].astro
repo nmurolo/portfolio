@@ -1,9 +1,9 @@
 ---
 import { getCollection, render, type CollectionEntry } from 'astro:content';
-import ContactCta from '../../components/ContactCta.astro';
 import MediaBlock from '../../components/MediaBlock.astro';
 import { site } from '../../data/site';
 import Layout from '../../layouts/Layout.astro';
+import { projectSidebar } from '../../lib/projects';
 
 export async function getStaticPaths() {
 	const projects = await getCollection('projects');
@@ -19,41 +19,47 @@ interface Props {
 
 const { project } = Astro.props;
 const { Content } = await render(project);
-const { title, summary, year, role, services, cover, links, media, accent } = project.data;
+const { title, summary, year, cover, links, media, accent } = project.data;
+const displayTitle = title ?? project.id;
+const sidebar = projectSidebar(project.data);
 
 const allProjects = (await getCollection('projects')).sort((a, b) => a.data.order - b.data.order);
 const currentIndex = allProjects.findIndex((item) => item.id === project.id);
-const nextProject = allProjects[(currentIndex + 1) % allProjects.length];
+const nextProject = allProjects[currentIndex + 1];
 ---
 
 <Layout
-	title={`${title} — ${site.name}`}
+	title={`${displayTitle} — ${site.name}`}
 	description={summary}
-	image={cover.src}
+	image={cover?.src}
 >
 	<article class="project" style={`--project-accent: ${accent}`}>
 		<header class="project-hero container">
 			<div class="project-heading">
-				<p class="eyebrow">Selected work · {year}</p>
-				<h1 class="display">{title}</h1>
+				<p class="eyebrow">Selected work{year ? ` · ${year}` : ''}</p>
+				<h1 class="display">{displayTitle}</h1>
 			</div>
-			<p class="lede">{summary}</p>
+			{summary && <p class="lede">{summary}</p>}
 		</header>
 
-		<div class="cover container" data-reveal>
-			<img src={cover.src} alt={cover.alt} />
-		</div>
+		{cover && (
+			<div class="cover container" data-reveal>
+				<img src={cover.src} alt={cover.alt} />
+			</div>
+		)}
 
 		<div class="project-body container">
 			<aside>
-				<div>
-					<p class="label">Role</p>
-					<p>{role}</p>
-				</div>
-				<div>
-					<p class="label">Services</p>
-					<ul>{services.map((service) => <li>{service}</li>)}</ul>
-				</div>
+				{sidebar.map((entry) => (
+					<div>
+						<p class="label">{entry.label}</p>
+						{entry.items.length === 1 ? (
+							<p>{entry.items[0]}</p>
+						) : (
+							<ul>{entry.items.map((item) => <li>{item}</li>)}</ul>
+						)}
+					</div>
+				))}
 				{links.length > 0 && (
 					<div>
 						<p class="label">Links</p>
@@ -74,17 +80,15 @@ const nextProject = allProjects[(currentIndex + 1) % allProjects.length];
 			</div>
 		)}
 
-		<section class="next-project container">
-			<p class="eyebrow">Next project</p>
-			<a href={`/projects/${nextProject.id}/`}>
-				<span>{nextProject.data.title}</span>
-				<span aria-hidden="true">↗</span>
-			</a>
-		</section>
-
-		<div class="section container">
-			<ContactCta compact />
-		</div>
+		{nextProject && (
+			<section class="next-project container">
+				<p class="eyebrow">Next project</p>
+				<a href={`/projects/${nextProject.id}/`}>
+					<span>{nextProject.data.title ?? nextProject.id}</span>
+					<span aria-hidden="true">↗</span>
+				</a>
+			</section>
+		)}
 	</article>
 </Layout>
 
@@ -107,10 +111,9 @@ const nextProject = allProjects[(currentIndex + 1) % allProjects.length];
 
 	.cover img {
 		width: 100%;
-		aspect-ratio: 16 / 10;
+		height: auto;
+		display: block;
 		border-radius: var(--radius-lg);
-		background: color-mix(in srgb, var(--project-accent) 18%, var(--surface));
-		object-fit: cover;
 	}
 
 	.project-body {

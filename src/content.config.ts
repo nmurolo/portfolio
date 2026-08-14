@@ -13,11 +13,19 @@ const mediaItem = z.object({
 const projects = defineCollection({
 	loader: glob({ base: './src/content/projects', pattern: '**/*.{md,mdx}' }),
 	schema: z.object({
-		title: z.string(),
-		summary: z.string(),
-		year: z.string(),
-		role: z.string(),
+		title: z.string().optional(),
+		summary: z.string().optional(),
+		year: z.string().optional(),
+		role: z.string().optional(),
 		services: z.array(z.string()).default([]),
+		details: z
+			.array(
+				z.object({
+					label: z.string(),
+					items: z.union([z.string(), z.array(z.string())]),
+				}),
+			)
+			.default([]),
 		featured: z
 			.union([
 				z.boolean(),
@@ -28,17 +36,19 @@ const projects = defineCollection({
 					cover: z
 						.object({
 							src: z.string(),
-							alt: z.string(),
+							alt: z.string().default(''),
 						})
 						.optional(),
 				}),
 			])
 			.default(false),
 		order: z.number().default(99),
-		cover: z.object({
-			src: z.string(),
-			alt: z.string(),
-		}),
+		cover: z
+			.object({
+				src: z.string(),
+				alt: z.string().default(''),
+			})
+			.optional(),
 		accent: z.string().default('#665cff'),
 		links: z
 			.array(
@@ -66,6 +76,17 @@ const life = defineCollection({
 			})
 			.optional(),
 		accent: z.string().default('#c95f3c'),
+		mark: z
+			.union([
+				z.string(),
+				z.object({
+					text: z.string(),
+					color: z.string().optional(),
+					opacity: z.number().min(0).max(1).optional(),
+					size: z.string().optional(),
+				}),
+			])
+			.optional(),
 	}),
 });
 

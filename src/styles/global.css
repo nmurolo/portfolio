@@ -167,7 +167,7 @@ h3 {
 	font-size: clamp(3.25rem, 9vw, 8.5rem);
 	font-weight: 400;
 	letter-spacing: -0.065em;
-	line-height: 0.9;
+	line-height: 1.12;
 }
 
 .lede {
@@ -201,6 +201,12 @@ h3 {
 	transform: translateY(-2px);
 }
 
+.button svg {
+	width: 1.15em;
+	height: 1.15em;
+	flex-shrink: 0;
+}
+
 .button--secondary {
 	border-color: var(--line);
 	background: transparent;
@@ -209,6 +215,18 @@ h3 {
 
 .button--secondary:hover {
 	background: var(--surface);
+}
+
+.button--accent {
+	border-color: var(--accent);
+	background: var(--accent);
+	color: #fff;
+}
+
+.button--accent:hover {
+	background: var(--accent-strong);
+	border-color: var(--accent-strong);
+	color: #fff;
 }
 
 .skip-link {
