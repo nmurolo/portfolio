@@ -47,9 +47,9 @@ export const site = {
 	},
 	heroMedia: {
 		type: 'video',
-		src: '',
+		src: '/videos/mark1.mp4',
 		poster: '',
-		alt: '',
+		alt: 'Mark1, a split-key keyboard, hovering in a demo shot.',
 	},
 	summary: {
 		href: '/summary.pdf',

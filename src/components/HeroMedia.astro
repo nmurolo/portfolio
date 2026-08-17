@@ -16,24 +16,53 @@ const isGif = /\.gif(\?|$)/i.test(src);
 	) : (
 		<video
 			class="hero-clip"
-			src={src}
 			poster={poster || undefined}
 			autoplay
 			muted
 			loop
 			playsinline
-			preload="metadata"
+			preload="auto"
+			disablepictureinpicture
 			aria-label={alt || undefined}
-		></video>
+		>
+			<source src={src} type="video/mp4" />
+		</video>
 	)}
 </div>
 
 <script>
 	const clip = document.querySelector<HTMLVideoElement>('.hero-clip');
-	if (clip && matchMedia('(prefers-reduced-motion: reduce)').matches) {
-		clip.removeAttribute('autoplay');
-		clip.pause();
-		clip.controls = true;
+
+	if (clip) {
+		const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+		clip.muted = true;
+		clip.defaultMuted = true;
+		clip.playsInline = true;
+		clip.loop = true;
+		clip.setAttribute('muted', '');
+		clip.setAttribute('playsinline', '');
+		clip.setAttribute('webkit-playsinline', 'true');
+
+		if (reduceMotion) {
+			clip.pause();
+			clip.controls = true;
+		} else {
+			const tryPlay = () => {
+				const playAttempt = clip.play();
+				if (playAttempt) {
+					playAttempt.catch(() => {
+						clip.controls = true;
+					});
+				}
+			};
+
+			if (clip.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA) {
+				tryPlay();
+			} else {
+				clip.addEventListener('canplay', tryPlay, { once: true });
+			}
+		}
 	}
 </script>
 
