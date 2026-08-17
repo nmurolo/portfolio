@@ -42,6 +42,10 @@ const { size = 'default' } = Astro.props;
 		padding: clamp(2.5rem, 7vw, 5.5rem) clamp(1.75rem, 5vw, 4.5rem);
 	}
 
+	.cta-copy {
+		min-width: 0;
+	}
+
 	h2 {
 		margin: 0;
 		font-family: var(--font-display);
@@ -78,7 +82,15 @@ const { size = 'default' } = Astro.props;
 
 	@media (max-width: 48rem) {
 		.conversation-cta {
-			grid-template-columns: 1fr;
+			grid-template-columns: minmax(0, 1fr);
+		}
+
+		h2,
+		.large h2 {
+			font-size: clamp(2.6rem, 14vw, 4.25rem);
+			line-height: 0.95;
+			white-space: normal;
+			overflow-wrap: break-word;
 		}
 
 		.cta-action {
