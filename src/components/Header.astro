@@ -1,0 +1,337 @@
+---
+import { getCollection } from 'astro:content';
+import { site } from '../data/site';
+import ThemeToggle from './ThemeToggle.astro';
+
+const projects = (await getCollection('projects')).sort((a, b) => a.data.order - b.data.order);
+const lifeEntries = (await getCollection('life')).sort((a, b) => a.data.order - b.data.order);
+---
+
+<header class="site-header">
+	<div class="header-inner container">
+		<a class="brand" href="/" aria-label={`${site.name}, home`}>
+			<span aria-hidden="true">{site.shortName}</span>
+			<span class="brand-name">{site.name}</span>
+		</a>
+
+		<nav class="desktop-nav" aria-label="Primary navigation">
+			<details class="nav-menu">
+				<summary>
+					Projects
+					<svg class="chevron" viewBox="0 0 12 12" aria-hidden="true">
+						<path d="m2.5 4.25 3.5 3.5 3.5-3.5"></path>
+					</svg>
+				</summary>
+				<div class="nav-dropdown">
+					<p>All projects</p>
+					{projects.map((project, index) => (
+						<a href={`/projects/${project.id}/`}>
+							<span>{String(index + 1).padStart(2, '0')}</span>
+							<strong>{project.data.title ?? project.id}</strong>
+							{project.data.year && <small>{project.data.year}</small>}
+						</a>
+					))}
+				</div>
+			</details>
+			<details class="nav-menu">
+				<summary>
+					Life
+					<svg class="chevron" viewBox="0 0 12 12" aria-hidden="true">
+						<path d="m2.5 4.25 3.5 3.5 3.5-3.5"></path>
+					</svg>
+				</summary>
+				<div class="nav-dropdown">
+					<p>Outside the office</p>
+					<a href="/life/">
+						<span>00</span>
+						<strong>All personal notes</strong>
+						<small>Index</small>
+					</a>
+					{lifeEntries.map((entry, index) => (
+						<a href={`/life/${entry.id}/`}>
+							<span>{String(index + 1).padStart(2, '0')}</span>
+							<strong>{entry.data.title}</strong>
+							<small>{entry.data.category}</small>
+						</a>
+					))}
+				</div>
+			</details>
+			{site.navigation.map((item) => <a href={item.href}>{item.label}</a>)}
+		</nav>
+
+		<div class="actions">
+			<ThemeToggle />
+			<details class="mobile-menu">
+				<summary aria-label="Open navigation"><span></span><span></span></summary>
+				<nav aria-label="Mobile navigation">
+					<p>Projects</p>
+					{projects.map((project) => (
+						<a class="project-link" href={`/projects/${project.id}/`}>{project.data.title ?? project.id}</a>
+					))}
+					<p>Life</p>
+					<a class="project-link" href="/life/">All personal notes</a>
+					{lifeEntries.map((entry) => (
+						<a class="project-link" href={`/life/${entry.id}/`}>{entry.data.title}</a>
+					))}
+					<p>Explore</p>
+					{site.navigation.map((item) => <a href={item.href}>{item.label}</a>)}
+				</nav>
+			</details>
+		</div>
+	</div>
+</header>
+
+<script>
+	const menus = document.querySelectorAll<HTMLDetailsElement>('.desktop-nav .nav-menu');
+
+	menus.forEach((menu) => {
+		menu.addEventListener('toggle', () => {
+			if (!menu.open) return;
+			menus.forEach((other) => {
+				if (other !== menu) other.open = false;
+			});
+		});
+	});
+</script>
+
+<style>
+	.site-header {
+		position: sticky;
+		top: 0;
+		z-index: 50;
+		border-bottom: 1px solid transparent;
+		background: color-mix(in srgb, var(--page) 86%, transparent);
+		backdrop-filter: blur(1rem);
+	}
+
+	.header-inner {
+		display: flex;
+		min-height: 5rem;
+		align-items: center;
+		justify-content: space-between;
+	}
+
+	.brand {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.8rem;
+		font-size: 0.9rem;
+		font-weight: 750;
+		letter-spacing: -0.02em;
+		text-decoration: none;
+	}
+
+	.brand > span:first-child {
+		display: grid;
+		width: 2.25rem;
+		height: 2.25rem;
+		place-items: center;
+		border-radius: 50%;
+		background: var(--text);
+		color: var(--page);
+		font-size: 0.72rem;
+		letter-spacing: 0;
+	}
+
+	.desktop-nav {
+		display: flex;
+		align-items: center;
+		gap: clamp(1.5rem, 3vw, 2.75rem);
+	}
+
+	.desktop-nav a {
+		color: var(--text-muted);
+		font-size: 0.84rem;
+		font-weight: 650;
+		text-decoration: none;
+		transition: color 180ms ease;
+	}
+
+	.desktop-nav a:hover {
+		color: var(--text);
+	}
+
+	.nav-menu {
+		position: relative;
+	}
+
+	.nav-menu > summary {
+		display: flex;
+		align-items: center;
+		gap: 0.35rem;
+		color: var(--text-muted);
+		font-size: 0.84rem;
+		font-weight: 650;
+		cursor: pointer;
+		list-style: none;
+		transition: color 180ms ease;
+	}
+
+	.nav-menu > summary:hover,
+	.nav-menu[open] > summary {
+		color: var(--text);
+	}
+
+	.nav-menu > summary::-webkit-details-marker {
+		display: none;
+	}
+
+	.chevron {
+		width: 0.75rem;
+		height: 0.75rem;
+		fill: none;
+		stroke: currentColor;
+		stroke-linecap: round;
+		stroke-linejoin: round;
+		stroke-width: 1.5;
+		transition: transform 200ms var(--ease);
+	}
+
+	.nav-menu[open] > summary .chevron {
+		transform: rotate(180deg);
+	}
+
+	.nav-dropdown {
+		position: absolute;
+		top: calc(100% + 1.2rem);
+		left: 50%;
+		width: min(27rem, calc(100vw - 2rem));
+		padding: 0.75rem;
+		border: 1px solid var(--line);
+		border-radius: var(--radius-md);
+		background: var(--surface);
+		box-shadow: var(--shadow);
+		transform: translateX(-50%);
+	}
+
+	.nav-dropdown::before {
+		position: absolute;
+		inset: -1.3rem 0 auto;
+		height: 1.3rem;
+		content: "";
+	}
+
+	.nav-dropdown p {
+		margin: 0;
+		padding: 0.5rem 0.65rem 0.75rem;
+		color: var(--text-muted);
+		font-size: 0.65rem;
+		font-weight: 750;
+		letter-spacing: 0.1em;
+		text-transform: uppercase;
+	}
+
+	.desktop-nav .nav-dropdown a {
+		display: grid;
+		grid-template-columns: 2rem 1fr auto;
+		gap: 0.65rem;
+		align-items: center;
+		padding: 0.8rem 0.65rem;
+		border-radius: 0.7rem;
+		color: var(--text);
+	}
+
+	.desktop-nav .nav-dropdown a:hover {
+		background: var(--surface-soft);
+	}
+
+	.nav-dropdown span,
+	.nav-dropdown small {
+		color: var(--text-muted);
+		font-size: 0.68rem;
+		font-weight: 500;
+	}
+
+	.nav-dropdown strong {
+		font-family: var(--font-display);
+		font-size: 1.15rem;
+		font-weight: 400;
+	}
+
+	.actions {
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+	}
+
+	.mobile-menu {
+		display: none;
+	}
+
+	@media (max-width: 42rem) {
+		.brand-name,
+		.desktop-nav {
+			display: none;
+		}
+
+		.mobile-menu {
+			display: block;
+		}
+
+		.mobile-menu > summary {
+			display: grid;
+			width: 2.5rem;
+			height: 2.5rem;
+			padding: 0;
+			place-content: center;
+			gap: 0.3rem;
+			border: 1px solid var(--line);
+			border-radius: 50%;
+			cursor: pointer;
+			list-style: none;
+		}
+
+		.mobile-menu > summary::-webkit-details-marker {
+			display: none;
+		}
+
+		.mobile-menu > summary span {
+			width: 1rem;
+			height: 1px;
+			background: var(--text);
+			transition: transform 200ms ease;
+		}
+
+		.mobile-menu[open] > summary span:first-child {
+			transform: translateY(0.2rem) rotate(45deg);
+		}
+
+		.mobile-menu[open] > summary span:last-child {
+			transform: translateY(-0.2rem) rotate(-45deg);
+		}
+
+		.mobile-menu nav {
+			position: fixed;
+			inset: 5rem 0 auto;
+			display: grid;
+			padding: 1rem var(--gutter) 2rem;
+			border-bottom: 1px solid var(--line);
+			background: var(--page);
+			box-shadow: var(--shadow);
+			max-height: calc(100svh - 5rem);
+			overflow-y: auto;
+		}
+
+		.mobile-menu nav p {
+			margin: 1rem 0 0.35rem;
+			color: var(--text-muted);
+			font-size: 0.65rem;
+			font-weight: 750;
+			letter-spacing: 0.1em;
+			text-transform: uppercase;
+		}
+
+		.mobile-menu nav a {
+			padding: 1rem 0;
+			border-bottom: 1px solid var(--line);
+			font-family: var(--font-display);
+			font-size: 2rem;
+			text-decoration: none;
+		}
+
+		.mobile-menu nav .project-link {
+			padding: 0.7rem 0;
+			font-size: 1.35rem;
+		}
+	}
+</style>

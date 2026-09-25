@@ -1,0 +1,85 @@
+---
+interface Props {
+	type?: 'video' | 'image';
+	src: string;
+	poster?: string;
+	alt?: string;
+}
+
+const { type = 'video', src, poster, alt = '' } = Astro.props;
+const isGif = /\.gif(\?|$)/i.test(src);
+---
+
+<div class="hero-media">
+	{type === 'image' || isGif ? (
+		<img src={src} alt={alt} />
+	) : (
+		<video
+			class="hero-clip"
+			poster={poster || undefined}
+			autoplay
+			muted
+			loop
+			playsinline
+			preload="auto"
+			disablepictureinpicture
+			aria-label={alt || undefined}
+		>
+			<source src={src} type="video/mp4" />
+		</video>
+	)}
+</div>
+
+<script>
+	const clip = document.querySelector<HTMLVideoElement>('.hero-clip');
+
+	if (clip) {
+		const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+		clip.muted = true;
+		clip.defaultMuted = true;
+		clip.playsInline = true;
+		clip.loop = true;
+		clip.setAttribute('muted', '');
+		clip.setAttribute('playsinline', '');
+		clip.setAttribute('webkit-playsinline', 'true');
+
+		if (reduceMotion) {
+			clip.pause();
+			clip.controls = true;
+		} else {
+			const tryPlay = () => {
+				const playAttempt = clip.play();
+				if (playAttempt) {
+					playAttempt.catch(() => {
+						clip.controls = true;
+					});
+				}
+			};
+
+			if (clip.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA) {
+				tryPlay();
+			} else {
+				clip.addEventListener('canplay', tryPlay, { once: true });
+			}
+		}
+	}
+</script>
+
+<style>
+	.hero-media {
+		position: relative;
+		z-index: 2;
+		overflow: hidden;
+		width: min(100%, 32rem);
+		margin-left: auto;
+		border-radius: var(--radius-md);
+	}
+
+	img,
+	video {
+		width: 100%;
+		height: auto;
+		display: block;
+	}
+</style>

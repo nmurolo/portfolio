@@ -1,0 +1,170 @@
+---
+import { getCollection, render, type CollectionEntry } from 'astro:content';
+import { site } from '../../data/site';
+import Layout from '../../layouts/Layout.astro';
+
+export async function getStaticPaths() {
+	const entries = await getCollection('life');
+	return entries.map((entry) => ({
+		params: { slug: entry.id },
+		props: { entry },
+	}));
+}
+
+interface Props {
+	entry: CollectionEntry<'life'>;
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+const { title, summary, category, cover, accent, mark } = entry.data;
+const markConfig = typeof mark === 'string' ? { text: mark } : mark;
+const markStyle = markConfig
+	? [
+			`--mark-color: ${markConfig.color ?? accent}`,
+			`--mark-opacity: ${markConfig.opacity ?? 0.16}`,
+			markConfig.size ? `--mark-size: ${markConfig.size}` : '',
+		]
+			.filter(Boolean)
+			.join('; ')
+	: '';
+---
+
+<Layout title={`${title} — ${site.name}`} description={summary} image={cover?.src}>
+	<article class="life-entry" style={`--life-accent: ${accent}`}>
+		<header class="entry-hero container">
+			<a class="back" href="/life/">← All personal notes</a>
+			{category && <p class="eyebrow">{category}</p>}
+			<h1 class="display">{title}</h1>
+			{summary && <p class="lede">{summary}</p>}
+			{markConfig && (
+				<span class="character" style={markStyle} aria-hidden="true">{markConfig.text}</span>
+			)}
+		</header>
+
+		{cover && (
+			<div class="cover container" data-reveal>
+				<img src={cover.src} alt={cover.alt} />
+			</div>
+		)}
+
+		<div class="story container">
+			<div class="prose">
+				<Content />
+			</div>
+		</div>
+
+		<nav class="entry-footer container" aria-label="Personal notes">
+			<a href="/life/">All personal notes</a>
+		</nav>
+	</article>
+</Layout>
+
+<style>
+	.entry-hero {
+		position: relative;
+		padding-block: clamp(4rem, 10vw, 9rem);
+	}
+
+	.back,
+	.entry-hero .eyebrow,
+	h1,
+	.entry-hero .lede {
+		position: relative;
+		z-index: 1;
+	}
+
+	.character {
+		position: absolute;
+		right: 0;
+		top: 50%;
+		z-index: 0;
+		color: var(--mark-color, var(--life-accent));
+		font-family: "Songti SC", "Source Han Serif SC", "Noto Serif SC", "Hiragino Mincho ProN", "Iowan Old Style", serif;
+		font-size: var(--mark-size, clamp(10rem, 28vw, 22rem));
+		font-weight: 600;
+		line-height: 0.8;
+		opacity: var(--mark-opacity, 0.16);
+		pointer-events: none;
+		user-select: none;
+		transform: translateY(-50%);
+	}
+
+	.back {
+		display: block;
+		width: fit-content;
+		margin-bottom: 2.5rem;
+		color: var(--text-muted);
+		font-size: 0.78rem;
+		font-weight: 650;
+		text-decoration: none;
+	}
+
+	.entry-hero .eyebrow {
+		display: flex;
+	}
+
+	h1 {
+		max-width: 11ch;
+		margin: 0 0 2.5rem;
+	}
+
+	.entry-hero .lede {
+		margin: 0;
+	}
+
+	.cover img {
+		width: 100%;
+		height: auto;
+		display: block;
+		border-radius: var(--radius-lg);
+	}
+
+	.story {
+		padding-block: var(--section-space);
+	}
+
+	.prose {
+		max-width: 48rem;
+	}
+
+	.prose :global(h2) {
+		margin: 4rem 0 1.25rem;
+		font-family: var(--font-display);
+		font-size: clamp(2.5rem, 5vw, 4.4rem);
+		font-weight: 400;
+	}
+
+	.prose :global(h2:first-child) {
+		margin-top: 0;
+	}
+
+	.prose :global(h3) {
+		margin: 2.75rem 0 0.8rem;
+		font-family: var(--font-display);
+		font-size: clamp(1.6rem, 3vw, 2.4rem);
+		font-weight: 400;
+	}
+
+	.prose :global(p),
+	.prose :global(li) {
+		color: var(--text-muted);
+		font-size: clamp(1.03rem, 2vw, 1.17rem);
+		line-height: 1.8;
+	}
+
+	.prose :global(strong) {
+		color: var(--text);
+	}
+
+	.entry-footer {
+		padding-block: clamp(4rem, 8vw, 7rem);
+		border-top: 1px solid var(--line);
+	}
+
+	.entry-footer a {
+		font-size: 0.86rem;
+		font-weight: 650;
+		text-decoration: none;
+	}
+</style>

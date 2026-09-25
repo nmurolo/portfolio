@@ -1,11 +1,207 @@
 ---
-import Welcome from '../components/Welcome.astro';
+import { getCollection } from 'astro:content';
+import ConversationCta from '../components/ConversationCta.astro';
+import HeroMedia from '../components/HeroMedia.astro';
+import ProjectGrid from '../components/ProjectGrid.astro';
+import SectionHeading from '../components/SectionHeading.astro';
+import { site } from '../data/site';
 import Layout from '../layouts/Layout.astro';
 
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+const projects = (await getCollection('projects', ({ data }) => data.featured))
+	.sort((a, b) => a.data.order - b.data.order);
+const heroMedia = site.heroMedia.src ? site.heroMedia : null;
 ---
 
-<Layout>
-	<Welcome />
+<Layout footerCta={false}>
+	<section class="hero container">
+		<div class="hero-main">
+			<div class="hero-copy">
+				<p class="eyebrow">{site.profile.eyebrow}</p>
+				<h2 class="display">{site.profile.headline}</h2>
+			</div>
+			{heroMedia && <HeroMedia {...heroMedia} />}
+		</div>
+		<div class="hero-bottom">
+			{site.profile.intro && <p class="lede">{site.profile.intro}</p>}
+			<a class="button button--secondary" href="#work">Explore selected work <span aria-hidden="true">↓</span></a>
+		</div>
+		{!heroMedia && (
+			<>
+				<div class="orb orb-one" aria-hidden="true"></div>
+				<div class="orb orb-two" aria-hidden="true"></div>
+			</>
+		)}
+	</section>
+
+	<section class="section container" id="work">
+		<SectionHeading
+			eyebrow="Selected work"
+			title="Projects I want to show off"
+			copy="These projects demonstrate my wide interests and give you insight into my identity."
+		/>
+		<ProjectGrid projects={projects} />
+	</section>
+
+	<section class="section cta-band">
+		<div class="container">
+			<ConversationCta size="large" />
+		</div>
+	</section>
+
+	<section class="section container profile">
+		<div class="profile-visual" data-reveal>
+			<img src="/images/profile-picture.png" alt="" loading="lazy" />
+		</div>
+		<div class="profile-copy" data-reveal>
+			<p class="eyebrow">A little about me</p>
+			<h2>Intellectually curious.<br />Dedicated to success.</h2>
+			{site.profile.bio && <p>{site.profile.bio}</p>}
+			<ul>
+				{site.profile.services.map((service) => <li>{service.label}</li>)}
+			</ul>
+			<a class="button button--secondary" href="/about/">More about my practice <span aria-hidden="true">↗</span></a>
+		</div>
+	</section>
 </Layout>
+
+<style>
+	.hero {
+		position: relative;
+		display: flex;
+		min-height: min(52rem, calc(100svh - 5rem));
+		flex-direction: column;
+		justify-content: space-between;
+		overflow: hidden;
+		padding-block: clamp(4rem, 10vh, 8rem) 3rem;
+	}
+
+	.hero-copy,
+	.hero-bottom {
+		position: relative;
+		z-index: 2;
+	}
+
+	.hero-main {
+		position: relative;
+		z-index: 2;
+		display: grid;
+		grid-template-columns: minmax(0, 1.1fr) minmax(14rem, 0.9fr);
+		gap: clamp(2rem, 6vw, 5rem);
+		align-items: center;
+	}
+
+	.hero-copy h1 {
+		max-width: 11ch;
+		margin: 0;
+	}
+
+	.hero-bottom {
+		display: flex;
+		align-items: end;
+		justify-content: space-between;
+		gap: 2rem;
+	}
+
+	.hero-bottom .lede {
+		margin: 0;
+	}
+
+	.orb {
+		position: absolute;
+		border-radius: 50%;
+		filter: blur(1px);
+		opacity: 0.72;
+		pointer-events: none;
+	}
+
+	.orb-one {
+		top: 15%;
+		right: 5%;
+		width: clamp(10rem, 25vw, 22rem);
+		aspect-ratio: 1;
+		background: radial-gradient(circle at 30% 25%, #d9d4ff, var(--accent) 58%, transparent 70%);
+		animation: float 8s ease-in-out infinite;
+	}
+
+	.orb-two {
+		right: 30%;
+		bottom: 15%;
+		width: clamp(5rem, 12vw, 10rem);
+		aspect-ratio: 1;
+		background: radial-gradient(circle at 35% 25%, #fff, #bc70ff 55%, transparent 72%);
+		animation: float 10s 1s ease-in-out infinite reverse;
+	}
+
+	@keyframes float {
+		50% { transform: translate3d(1rem, -1.5rem, 0) rotate(8deg); }
+	}
+
+	.cta-band {
+		background: var(--surface);
+	}
+
+	.profile {
+		display: grid;
+		grid-template-columns: minmax(0, 1.05fr) minmax(20rem, 0.95fr);
+		gap: clamp(3rem, 8vw, 8rem);
+		align-items: center;
+	}
+
+	.profile-visual img {
+		width: 100%;
+		height: auto;
+		display: block;
+		border-radius: var(--radius-md);
+	}
+
+	.profile-copy h2 {
+		margin-bottom: 2rem;
+		font-family: var(--font-display);
+		font-size: clamp(2.8rem, 6vw, 5.5rem);
+		font-weight: 400;
+	}
+
+	.profile-copy > p:not(.eyebrow) {
+		color: var(--text-muted);
+		font-size: 1.1rem;
+	}
+
+	.profile-copy ul {
+		display: grid;
+		grid-template-columns: repeat(2, 1fr);
+		margin: 2rem 0;
+		padding: 0;
+		border-top: 1px solid var(--line);
+		list-style: none;
+	}
+
+	.profile-copy li {
+		padding: 0.8rem 0;
+		border-bottom: 1px solid var(--line);
+		font-size: 0.84rem;
+	}
+
+	@media (max-width: 48rem) {
+		.hero {
+			min-height: calc(100svh - 5rem);
+		}
+
+		.hero-bottom {
+			align-items: flex-start;
+			flex-direction: column;
+		}
+
+		.hero-main {
+			grid-template-columns: 1fr;
+		}
+
+		.orb-one {
+			top: 35%;
+			right: -10%;
+		}
+
+		.profile {
+			grid-template-columns: 1fr;
+		}
+	}
+</style>

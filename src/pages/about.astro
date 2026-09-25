@@ -1,0 +1,169 @@
+---
+import { site } from '../data/site';
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title={`About — ${site.name}`} description={`Learn about ${site.name}'s approach, capabilities, and experience.`}>
+	<section class="about-hero container" data-reveal>
+		<div class="hero-copy">
+			<p class="eyebrow">About</p>
+			<h1 class="display">Curiosity:</h1>
+			<div class="intro-copy">
+				{site.profile.bio && <p class="lead">{site.profile.bio}</p>}
+				<p>
+					Curiosity is the trait that keeps me growing. It's what allows me to acquire new skills in the workplace, bond with people who have different backgrounds and experiences, and tackle new and intimidating personal projects. 
+				</p>
+			</div>
+		</div>
+		<img src="/images/profile-picture.png" alt="" />
+	</section>
+
+	<section class="capabilities-section container">
+		<div class="capabilities">
+			<header>
+				<p class="eyebrow">Capabilities</p>
+				<h2>I truly believe I can do anything I set my mind to.</h2>
+			</header>
+			<div class="capability-list">
+				{site.profile.services.map((service, index) => (
+					<div data-reveal>
+						<span>0{index + 1}</span>
+						<h3>{service.label}</h3>
+						<p>{service.description}</p>
+					</div>
+				))}
+			</div>
+		</div>
+	</section>
+
+	<section class="facts">
+		<div class="container facts-grid">
+			<div>
+				<p class="eyebrow">Status</p>
+				<p>{site.availability}</p>
+			</div>
+			<div>
+				<p class="eyebrow">Location</p>
+				<p>{site.location}</p>
+			</div>
+			<div>
+				<p class="eyebrow">Best fit</p>
+				<p>Any project that needs a driver </p>
+			</div>
+		</div>
+	</section>
+</Layout>
+
+<style>
+	.about-hero {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) minmax(16rem, 0.85fr);
+		gap: clamp(2rem, 6vw, 5rem);
+		align-items: start;
+		padding-top: clamp(4rem, 8vw, 7rem);
+		padding-bottom: 2rem;
+	}
+
+	h1 {
+		max-width: 11ch;
+		margin: 0 0 1.5rem;
+	}
+
+	.about-hero img {
+		width: 100%;
+		height: auto;
+		display: block;
+		border-radius: var(--radius-md);
+	}
+
+	.intro-copy p {
+		color: var(--text-muted);
+	}
+
+	.intro-copy .lead {
+		color: var(--text);
+		font-family: var(--font-display);
+		font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+		letter-spacing: -0.035em;
+		line-height: 1.15;
+	}
+
+	.capabilities-section {
+		padding-top: 1.5rem;
+		padding-bottom: var(--section-space);
+	}
+
+	.capabilities {
+		display: grid;
+		grid-template-columns: 0.8fr 1.2fr;
+		gap: clamp(3rem, 10vw, 10rem);
+	}
+
+	.capabilities h2 {
+		max-width: 10ch;
+		font-family: var(--font-display);
+		font-size: clamp(2.5rem, 5vw, 4.5rem);
+		font-weight: 400;
+	}
+
+	.capability-list > div {
+		display: grid;
+		grid-template-columns: 2rem minmax(9rem, 0.7fr) 1fr;
+		gap: 1rem;
+		padding: 1.5rem 0;
+		border-top: 1px solid var(--line);
+	}
+
+	.capability-list span {
+		color: var(--accent);
+		font-size: 0.7rem;
+		font-weight: 700;
+	}
+
+	.capability-list h3,
+	.capability-list p {
+		margin: 0;
+	}
+
+	.capability-list h3 {
+		font-size: 1rem;
+		letter-spacing: -0.02em;
+		line-height: 1.5;
+	}
+
+	.capability-list p {
+		color: var(--text-muted);
+		font-size: 0.85rem;
+	}
+
+	.facts {
+		padding-block: 3rem;
+		background: var(--surface);
+	}
+
+	.facts-grid {
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
+		gap: 2rem;
+	}
+
+	.facts-grid p:last-child {
+		margin: 0;
+	}
+
+	@media (max-width: 48rem) {
+		.about-hero,
+		.capabilities,
+		.facts-grid {
+			grid-template-columns: 1fr;
+		}
+
+		.capability-list > div {
+			grid-template-columns: 2rem 1fr;
+		}
+
+		.capability-list p {
+			grid-column: 2;
+		}
+	}
+</style>

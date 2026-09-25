@@ -1,0 +1,32 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import ProjectCard from './ProjectCard.astro';
+
+interface Props {
+	projects: CollectionEntry<'projects'>[];
+}
+
+const { projects } = Astro.props;
+---
+
+<div class="project-grid">
+	{projects.map((project, index) => <ProjectCard project={project} index={index} />)}
+</div>
+
+<style>
+	.project-grid {
+		display: grid;
+		gap: clamp(4rem, 8vw, 8rem);
+	}
+
+	.project-grid :global(.project-card:nth-child(even)) {
+		width: min(88%, 68rem);
+		margin-left: auto;
+	}
+
+	@media (max-width: 48rem) {
+		.project-grid :global(.project-card:nth-child(even)) {
+			width: 100%;
+		}
+	}
+</style>

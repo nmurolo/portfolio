@@ -1,22 +1,124 @@
+---
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { site } from '../data/site';
+import '../styles/global.css';
+
+interface Props {
+	title?: string;
+	description?: string;
+	image?: string;
+	footerCta?: boolean;
+}
+
+const {
+	title = site.title,
+	description = site.description,
+	image = '/images/profile-picture.png',
+	footerCta = true,
+} = Astro.props;
+
+const baseUrl = Astro.site ?? Astro.url;
+const canonical = new URL(Astro.url.pathname, baseUrl);
+const socialImage = new URL(image, baseUrl);
+---
+
 <!doctype html>
 <html lang="en">
 	<head>
 		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width" />
-		<link rel="icon" type="image/png" href="/favicon.png" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<meta name="generator" content={Astro.generator} />
-		<title>Nicholas Murolo</title>
+		<meta name="description" content={description} />
+		<meta name="theme-color" content="#f5f4f0" />
+		<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+		<link rel="canonical" href={canonical} />
+		<meta property="og:type" content="website" />
+		<meta property="og:title" content={title} />
+		<meta property="og:description" content={description} />
+		<meta property="og:url" content={canonical} />
+		<meta property="og:image" content={socialImage} />
+		<meta name="twitter:card" content="summary_large_image" />
+		<meta name="twitter:title" content={title} />
+		<meta name="twitter:description" content={description} />
+		<meta name="twitter:image" content={socialImage} />
+		<title>{title}</title>
+		<script is:inline>
+			(function () {
+				try {
+					const saved = localStorage.getItem('theme');
+					if (saved === 'light' || saved === 'dark') document.documentElement.dataset.theme = saved;
+				} catch (_) {}
+			})();
+		</script>
 	</head>
-	<body>
-		<slot />
+	<body id="top">
+		<a class="skip-link" href="#main-content">Skip to content</a>
+		<Header />
+		<main id="main-content">
+			<slot />
+		</main>
+		<Footer cta={footerCta} />
+		<script>
+			const revealItems = document.querySelectorAll('[data-reveal]');
+			const prefersReducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+			if ('IntersectionObserver' in window && !prefersReducedMotion) {
+				const observer = new IntersectionObserver(
+					(entries) => {
+						entries.forEach((entry) => {
+							if (entry.isIntersecting) {
+								entry.target.classList.add('is-visible');
+								observer.unobserve(entry.target);
+							}
+						});
+					},
+					{ threshold: 0.12 },
+				);
+				revealItems.forEach((item) => observer.observe(item));
+			} else {
+				revealItems.forEach((item) => item.classList.add('is-visible'));
+			}
+
+			function smoothScrollTo(target) {
+				const header = document.querySelector('.site-header');
+				const offset = header instanceof HTMLElement ? header.getBoundingClientRect().height + 12 : 96;
+				const end = Math.max(0, target.getBoundingClientRect().top + window.scrollY - offset);
+				const start = window.scrollY;
+				const distance = end - start;
+
+				if (prefersReducedMotion || Math.abs(distance) < 2) {
+					window.scrollTo(0, end);
+					return;
+				}
+
+				const duration = Math.min(1100, Math.max(650, Math.abs(distance) * 0.55));
+				const started = performance.now();
+				const ease = (t) => 1 - Math.pow(1 - t, 3);
+
+				const step = (now) => {
+					const t = Math.min(1, (now - started) / duration);
+					window.scrollTo(0, start + distance * ease(t));
+					if (t < 1) requestAnimationFrame(step);
+				};
+
+				requestAnimationFrame(step);
+			}
+
+			document.addEventListener('click', (event) => {
+				const link = event.composedPath().find((node) => node instanceof HTMLAnchorElement);
+				if (!(link instanceof HTMLAnchorElement)) return;
+
+				const href = link.getAttribute('href');
+				if (!href?.startsWith('#')) return;
+
+				const target = document.getElementById(href.slice(1));
+				if (!target) return;
+
+				event.preventDefault();
+				smoothScrollTo(target);
+				history.pushState(null, '', href);
+			});
+		</script>
 	</body>
 </html>
-
-<style>
-	html,
-	body {
-		margin: 0;
-		width: 100%;
-		height: 100%;
-	}
-</style>
